@@ -1,0 +1,61 @@
+The Structure and Execution of Ruby Programs
+
+=== Comments ===
+Comment with #
+Or multi-line called embedded documents
+    =begin
+        Some stuff here
+    =end
+
+Can add comments before method, class, and module definitions that are automatically extracted by rdoc as API documentation.
+
+=== Identifiers ===
+Identifiers can start with letters, numbers, and underscore.
+If identifier starts with upper case it's considered a constant, but only issues a warning if reassigned.
+
+Identifier punctuation
+$ - global
+@ - instance variable
+@@ - class variable
+? - methods ending with ? return booleans by convention
+= - methods ending with = can be invoked on the left side of an assignment operator
+
+Bunch of Ruby keywords
+    __LINE__ case ensure not then __ENCODING__ class false or true
+    __FILE__ def for redo undef BEGIN defined? if rescue unless
+    END do in retry until alias else module return when
+    and elsif next self while begin end nil super yield break
+
+Keyword-lite
+    =begin =end __END__
+
+And a bunch more names that should be considered reserved keywords since they are methods in std lib.
+
+=== Whitespace ===
+Ruby parses until it reads a complete statement that ends with a newline.
+Exception is when the following line starts with a period.
+
+=== 2.2 Syntactic Structure ===
+Basic unit of syntax is an expression which Ruby evaluates to a value.
+Simplest are primary expressions which are literals and variable references.
+Compound expressions combine subexpressions with operators:
+    [1, 2, 3] # Array literal
+    {1=>"one", 2=>"two"} # Hash literal
+    1..3 # Range literal
+    1 + 1 # Compound expression
+    x = 1 # Assignment expression
+
+Statements combine expressions with Ruby keywords.
+Technically they are also expressions, but it's useful to distinguish them as they affect control flow.
+
+=== 2.2.1 Block Structure ===
+Blocks are lines of code delimited by {...} or do...end
+2 line indent by convention.
+
+=== 2.3 File Structure ===
+#!/usr/bin/ruby -w shebang comment
+# -*- coding: utf-8 -*- coding comment
+require 'socket' load networking library
+
+=== 2.4 File Encoding ===
+Ruby assume ASCII, but other formats can be specified in the coding comment at the top of the file.

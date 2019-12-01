@@ -1,0 +1,1 @@
+var search_data = {"index":{"searchIndex":["object","foo()"],"longSearchIndex":["object","object#foo()"],"info":[["Object","","Object.html","",""],["foo","Object","Object.html#method-i-foo","()","<p>paragraph\n<p>Headings\n<p>heading begins with equal sign\n"]]}}
