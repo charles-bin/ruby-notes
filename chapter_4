@@ -1,0 +1,46 @@
+Chapter 4 - Expressions and Operators
+
+In most languages an expression is code that evaluates to a value, while a statement has no value and is just executed.
+In Ruby all statements produce a value as well.
+
+4.1 Literals review
+4.2 Variable references
+4.2.1 Uninitialized variables
+Class variables have to be assigned before use
+Instance variables are nil by default
+Global variables are nil by default
+Local variables will raise NameError if not init (unless it's assigned in unexecuted code, then it's nil)
+
+4.3 Constant references
+Must begin with capital, usually all uppercase with underscores.
+Have global scope, can be used anywhere.
+Conversions::Area::HECTARES_PER_ACRE # Can be qualified
+::ARGV # Reference a global constant, actually shorthand for Object::ARGV
+
+4.4 Method invocations
+
+4.5 Assignments
+Can't assign to constants in methods
+Ruby has these special case method names that tie into syntactic sugar.
+If o.m= is defined, then we can assign to o.m with o.m = v, which is shorthand for o.m=(v)
+If o.[]= is defined, then the sugared assignment o[x] = y is shorthand for o.[]=(x, y)
+Basically Ruby enables familiar syntax for array indexing and attributes by mapping that syntax to special methods.
+
+There are a bunch of predefined abbreviated assignments that combine = with an operator.
+
+Parallel assignments
+
+4.6 Operators
+Goes through all operators.
+
+# Equality operator review
+== # pretty much same as equal? eql? (this may not have type conversion)
+=~ # pattern-matching, String defines it to take a regex on the right
+!~ # inverse of =~
+=== # case equality operator, redefined in stdlib as membership or pattern-matching
+
+When used in a conditional .. and ... create a boolean flip-flop expression.
+It evaluates to false until the left side expression is true. Then returns true until the right side expression is true.
+
+?: # ternary
+defined? # test if operand is defined someplace
