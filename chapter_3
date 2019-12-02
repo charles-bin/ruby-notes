@@ -1,0 +1,289 @@
+Chapter 3 Datatypes and Objects
+
+= 3.1 Numbers =
+Top class is Numeric, below are a bunch (Integer, Float, Complex, BigDecimal, Rational).
+Integer has two subclasses (Fixnum, Bignum).
+
+Floating point division resultant type depends on if at least one operand is a float.
+Exponentiation is **
+
+= 3.2 Text =
+All text are objects of the String class and are mutable.
+
+== Single quotes ==
+'This is a simple Ruby string literal'
+'Won\'t you read O\'Reilly\'s book?' # Use \ to escape a ' or \
+'a\b' == 'a\\b' # For any other character \ isn't special
+
+message =
+  'These three literals are '\
+  'concatenated into one by the interpreter. '\
+  'The resulting string contains no newlines.'
+
+== Double quotes ==
+"\t\"This quote begins with a tab and ends with a newline\"\n"
+"\\" # A single backslash
+
+# string interpolation
+"360 degrees=#{2*Math::PI} radians" # "360 degrees=6.28318530717959 radians"
+
+sprintf("pi is about %.4f", Math::PI) # Returns "pi is about 3.1416"
+"pi is about %.4f" % Math::PI # Same as example above
+"%s: %f" % ["pi", Math::PI] # Array on righthand side for multiple args
+
+"This string literal
+has two lines \
+but is written on three" # line terminators are part of the string literal unless escaped with \
+
+== Arbitrary string delimiters ==
+%q(Don't worry about escaping ' characters!)
+%Q|"How are you?", he said|
+%-This string literal ends with a newline\n- # One of the predefined delimiters so Q is omitted
+
+document = <<HERE # This is how we begin a here document
+  This is a string literal.
+  It has two lines and abruptly ends...
+  HERE
+
+== Backtick command exec ==
+`ls` # Returns command's output as string
+%x[ls]
+
+== Character literal ==
+In ruby 1.9 these are characters of length 1
+?A # Character literal for the ASCII character A
+?" # Character literal for the double-quote character
+?? # Character literal for the question mark character
+
+== String operators ==
+planet = "Earth"
+"Hello" + " " + planet # Produces the new string object "Hello Earth"
+"Hello planet #" + planet_number.to_s # to_s converts to a string
+
+greeting = "Hello"
+greeting << " " << "World" # Alters lefthand operand
+puts greeting # Outputs "Hello World"
+
+ellipsis = '.'*3 # Evaluates to '...'
+a = 0;
+"#{a=a+1} " * 3 # Returns "1 1 1 ", not "1 2 3 "
+
+a == b # if same length and all characters equal
+# <, <=, >, >= compare relative order
+
+s = 'hello'; # Ruby 1.9
+s[0] # 'h': the first character of the string, as a string
+s[s.length-1] # 'o': the last character 'o'
+s[-1] # 'o': another way of accessing the last character
+s[-2] # 'l': the second-to-last character
+s[-s.length] # 'h': another way of accessing the first character
+s[s.length] # nil: there is no character at that index
+
+s[0] = ?H # Replace first character with a capital H
+s[-1] = ?O # Replace last character with a capital O
+s[s.length] = ?! # ERROR! Can't assign beyond the end of the string
+s = "hello" # Begin with a greeting
+s[-1] = "" # Delete the last character; s is now "hell"
+s[-1] = "p!" # Change new last character and add one; s is now "help!"
+
+# for substrings specify index, length
+s = "hello"
+s[0,2] # "he"
+s[-1,1] # "o": returns a string, not the character code ?o
+s[0,0] # "": a zero-length substring is always empty
+s[0,10] # "hello": returns all the characters that are available
+s[s.length,1] # "": there is an empty string immediately beyond the end
+s[s.length+1,1] # nil: it is an error to read past that
+s[0,-1] # nil: negative lengths don't make any sense
+
+s = "hello"
+s[0,1] = "H" # Replace first letter with a capital letter
+s[s.length,0] = " world" # Append by assigning beyond the end of the string
+s[5,0] = "," # Insert a comma, without deleting anything
+s[5,6] = "" # Delete with no insertion; s == "Hellod"
+
+# index string with a Range object
+s = "hello"
+s[2..3] # "ll": characters 2 and 3
+s[-3..-1] # "llo": negative indexes work, too
+s[0..0] # "h": this Range includes one character index
+s[0...0] # "": this Range is empty
+s[2..1] # "": this Range is also empty
+s[7..10] # nil: this Range is outside the string bounds
+s[-2..-1] = "p!" # Replacement: s becomes "help!"
+s[0...0] = "Please " # Insertion: s becomes "Please help!"
+s[6..10] = "" # Deletion: s becomes "Please!"
+
+# can index by regex, for first matching substring
+s[/[aeiou]/] = '*' # Replace first vowel with an asterisk
+
+== Iterating strings ==
+# use methods each_char, each_byte, each_line
+s = "¥1000"
+s.each_char {|x| print "#{x} " } # Prints "¥ 1 0 0 0". Ruby 1.9
+0.upto(s.size-1) {|i| print "#{s[i]} "} # Inefficient with multibyte chars
+
+= 3.3 Arrays =
+s.size, s.length
+
+[1, 2, 3] # An array that holds three Fixnum objects
+[-10...0, 0..10,] # An array of two ranges; trailing commas are allowed
+[[1,2],[3,4],[5]] # An array of nested arrays
+[x+y, x-y, x*y] # Array elements can be arbitrary expressions
+[] # The empty array has size 0
+
+words = %w[this is a test] # Same as: ['this', 'is', 'a', 'test']
+open = %w| ( [ { < | # Same as: ['(', '[', '{', '<']
+white = %W(\s \t \r \n) # Same as: ["\s", "\t", "\r", "\n"]
+
+empty = Array.new # []: returns a new empty array
+nils = Array.new(3) # [nil, nil, nil]: new array with 3 nil elements
+zeros = Array.new(4, 0) # [0, 0, 0, 0]: new array with 4 0 elements
+copy = Array.new(nils) # Make a new copy of an existing array
+count = Array.new(3) {|i| i+1} # [1,2,3]: 3 elements computed from index
+
+# pretty much same as strings
+a = ('a'..'e').to_a # Range converted to ['a', 'b', 'c', 'd', 'e']
+
+# operators
++ # concat
+- # remove elements in right operand from left operand as new object
+<< # append
+* # repetition
+| # union, it's actually concat then remove duplicates so it's ordered
+& # intersection
+
+# loop through
+a = ('A'..'Z').to_a # Begin with an array of letters
+a.each {|x| print x } # Print the alphabet, one letter at a time
+
+= 3.4 Hashes =
+# This hash will map the names of digits to the digits themselves
+numbers = Hash.new # Create a new, empty, hash object
+numbers["one"] = 1 # Map the String "one" to the Fixnum 1
+numbers["two"] = 2 # Note that we are using array notation here
+numbers["three"] = 3
+sum = numbers["one"] + numbers["two"] # Retrieve values like this
+
+# Hash object literals
+numbers = { "one" => 1, "two" => 2, "three" => 3 }
+# In general, Symbol objects work more efficiently as hash keys than strings do:
+numbers = { :one => 1, :two => 2, :three => 3 }
+# When keys are symbols, it's like python
+numbers = { one: 1, two: 2, three: 3 }
+
+Hashes compare keys for equality by calling eql?, which is like ==
+If eql? is not overriden then it's comparing object references.
+Don't use mutable data as keys.
+
+= 3.5 Ranges =
+# Two dots inclusive, three dots then end exclusive
+1..10 # The integers 1 through 10, including 10
+1.0...10.0 # The numbers between 1.0 and 10.0, excluding 10.0 itself
+
+# Test for existence in range
+cold_war = 1945..1989
+cold_war.include? birthdate.year
+
+Discrete ranges have elements which define a succ method and can be iterated by each, step, and Enumerable methods.
+Continuous ranges don't define succ (like floats).
+
+# Low operator precedence
+1..3.to_a # Tries to call to_a on the number 3
+(1..3).to_a # => [1,2,3]
+
+# Test for inclusion
+Can be either continuous or discrete tests.
+cover? is always continuous
+include? member? are continuous if endpoints are numbers, otherwise discrete
+
+= 3.6 Symbols =
+:symbol # A Symbol literal
+:"symbol" # The same literal
+:'another long symbol' # Quotes are useful for symbols with spaces
+
+s = "string"
+sym = :"#{s}" # The Symbol :string
+
+# same as %q %Q
+%s["] # Same as :'"'
+
+# Often used to refer to method names
+o.respond_to? :each
+
+# String to Symbol
+str.intern
+str.to_sym
+# Symbol to String
+sym.to_s
+sym.id2name
+
+= 3.7 True, False, Nil =
+All singleton instances of TrueClass, FalseClass, and NilClass
+Unlike Python, anything not nil or false is true
+
+= 3.8 Objects =
+# Create an object from a class
+o = myClass.new
+
+# Every object has an id
+o.object_id
+
+# Determine class of an object
+o.class
+o.class.superclass
+o.class == String
+o.instance_of? String
+o.is_a? Object
+
+# Check if object implements some method
+o.repsond_to? :"<<"
+
+== 3.8.5 Object Equality ==
+# Pretty much opposite of Java
+equal? # Referential equality, like checking object_id
+== # Usually redefined, in Object it's same as equal?
+!= # Just inverts ==
+eql? # Usually same as ==, or stricter in that no type conversion is done for you
+=== # Used to check for equality in a case statement, oftentimes more of a membership or matching operator
+
+== 3.8.6 Object Order ==
+Classes implement ordering by overriding the <=> operator
+If left op less than right op returns -1. If unable to compare than returns nil.
+
+To add the more intuitive <, >, <=, >=, ==, we can include the Comparable module as a mixin.
+This implements the above operators in terms of <=>.
+
+== 3.8.7 Object Conversion ==
+# Common methods to explicitly convert
+to_s, to_i, to_f, to_a
+
+# Methods to implicitly convert
+# Built-in classes will call these through try_convert
+to_str, to_ary, to_hash
+
+# Also through global conversion methods from the Kernel module
+Array, Float, Integer, String
+
+== 3.8.8 Copying Objects ==
+# Shallow copy
+clone, dup
+
+Or override initialize_copy method which receives an empty instance of the class, which can then be init
+
+# clone copies everything
+# dup unfreezes frozen objects and doesn't copy singleton methods
+
+== 3.8.9 Marshaling Objects ==
+# Can save the state of an object with:
+Marshal.dump
+
+Can make deep copies by saving then loading with Marshal
+
+== 3.8.10 Freezing Objects ==
+Any object can be frozen by calling freeze, this makes it immutable
+Check with frozen?
+
+== 3.8.11 Tainting Objects ==
+Mark an object as tainted by calling taint, and any derived objects will be tainted
+Check with tainted?
