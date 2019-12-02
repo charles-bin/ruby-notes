@@ -1,0 +1,111 @@
+Chapter 5 - Statements and Control Structures
+
+5.1 Conditionals
+if expression [then]
+  block
+elsif expression [then]
+  block
+else expression [then]
+  block
+end
+
+code if expression # careful it has lower precedence than assignment
+
+# enter block if condition is falsy
+unless condition
+  code
+else
+  code
+end
+
+code unless condition
+
+# case compares x to each when's evaluated expression using the === operator
+case x
+when 1
+  'one'
+when 2
+  'two'
+when 3, 4 # can have multiple expressions, logical or
+  'three or four'
+else 'many'
+end
+
+5.2 Loops
+while, until
+
+while expression do
+  block
+end
+
+x += 1 while expression
+
+for var in collection do
+  block
+end
+
+5.3 Iterators and Enumerable Objects
+
+times, each, map, upto
+
+[1, 2, 3].map { |x| x*x }
+
+# Implicitly expects a block, which is invoked at each yield
+def twice
+  yield
+  yield
+end
+
+# Enumerators are immutable objects that iterate through elements.
+# Just calling the each method without a block will return an enumerator.
+process(data.each_char)
+
+5.4 Blocks
+
+Blocks should follow method invocations, if not yielded to they are silently ignored.
+Either {} or do end.
+Variables outside are visible within block unless they are overriden by block parameters.
+Blocks get parameters by yielding values.
+Blocks can also receive variable numbers of parameters with *
+
+5.5 Altering Control Flow
+
+return, break, next, redo, retry, throw/catch
+
+5.6 Expections and Exception Handling
+
+raise/fail, rescue
+
+# Exception object methods
+message, backtrace
+
+# Raise can be called like
+raise # no arg, RuntimeError
+raise Exception # vanilla
+raise "Error while..." # RuntimeError with message
+raise obj # returns obj.exception Exception object
+
+# Common code block with possible exceptions
+begin
+  code
+rescue ArgumentError, TypeError => ex # by type, also global variable $! refers to the Exception object
+  code
+else # runs if begin code finishes and no rescue clauses are executed
+  code
+ensure # runs before code returns, even after exception handling
+  code
+end
+
+Exception which occurs in rescue clause will replace the current one and propogate up.
+
+5.7 BEGIN and END
+BEGIN {}
+END {}
+
+5.8 Threads, Fibers, and Continuations
+thread = Thread.new { block }
+thread.value # blocks until block returns
+
+Fibers are like corountines
+
+Continuations let you return to an address in a callstack, like goto
