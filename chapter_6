@@ -1,0 +1,120 @@
+Chapter 6. Methods, Procs, Lambdas, and Closures
+
+Proc objects represent blocks
+
+self refers to the object on which the method was invoked
+
+6.1.4 Defining Singleton Methods
+The resulting method is known as a singleton method because it is available only on a single object:
+
+o = "message" # A string is an object
+def o.printme # Define a singleton method for this object
+  puts self
+end
+o.printme # Invoke the singleton
+
+undef # cannot be used to undefine a singleton method
+
+6.2 Method Names
+
+def +(other) # Define binary plus operator: x+y is x.+(y)
+  self.concatenate(other)
+end
+
+alias new_name existing_name
+
+6.4 Method arguments
+
+Argument defaults need not be constants: they may be arbitrary expressions, and can
+be referred to instance variables and to previous parameters in the parameter list. For example:
+
+# Return the last character of s or the substring from index to the end
+def suffix(s, index=s.size-1)
+  s[index, s.size-index]
+end
+
+6.4.2 Variable-Length Argument Lists and Arrays
+
+# Return the largest of the one or more arguments passed
+def max(first, *rest)
+  # Assume that the required first argument is the largest
+  max = first
+  # Now loop through each of the optional arguments looking for bigger ones
+  rest.each {|x| max = x if x > max }
+  # Return the largest one we found
+  max
+end
+
+# *, the splat
+data = [3, 2, 1]
+m = max(*data) # first = 3, rest=[2,1] => 3
+
+6.4.4 Hashes for Named Arguments
+
+6.4.5 Block Arguments
+def sequence3(n, m, c, &b) # Explicit argument to get block as a Proc
+  i = 0
+  while(i < n)
+    b.call(i*m + c) # Invoke the Proc with its call method
+    i += 1
+  end
+end
+# Note that the block is still passed outside of the parentheses
+sequence3(5, 2, 2) {|x| puts x }
+
+6.4.5.1 Using & in method invocation
+
+Rather than having the Ruby interpreter
+parse the same block twice, we can create a Proc to represent the block, and use
+the single Proc object twice:
+
+a, b = [1,2,3], [4,5] # Start with some data.
+summation = Proc.new {|total,x| total+x } # A Proc object for summations.
+sum = a.inject(0, &summation) # => 6
+sum = b.inject(sum, &summation) # => 15
+
+words = ['and', 'but', 'car'] # An array of words
+uppercase = words.map &:upcase # Convert to uppercase with String.upcase
+upper = words.map {|w| w.upcase } # This is the equivalent code with a block
+
+6.5 Procs and Lambdas
+
+Procs have block-like behavior and lambdas have method-like behavior. Both, however, are instances of class Proc.
+
+You can determine whether a Proc object is a proc or a lambda with the instance method lambda?
+
+6.5.1 Creating Procs
+p = Proc.new {|x,y| x+y }
+p = proc {|x,y| x+y } # Ruby 1.9
+
+As its name suggests, the Proc object returned by this method is a lambda rather than a proc.
+is_positive = lambda {|x| x > 0 }
+
+With these changes, we get a Ruby 1.9 lambda literal:
+succ = ->(x){ x+1 }
+
+As with blocks in Ruby 1.9, the argument list of a lambda literal may include the declaration
+of block-local variables that are guaranteed not to overwrite variables with the
+same name in the enclosing scope. Simply follow the parameter list with a semicolon and a list of local variables:
+# This lambda takes 2 args and declares 3 local vars
+f = ->(x,y; i,j,k) { ... }
+
+6.5.2 Invoking Procs and Lambdas
+
+f = Proc.new {|x,y| 1.0/(1.0/x + 1.0/y) }
+z = f.call(x,y)
+z = f[x,y]
+z = f.(x,y)
+
+6.5.3 The Arity of a Proc
+lambda{||}.arity # => 0. No arguments expected
+lambda{|x| x}.arity # => 1. One argument expected
+lambda{|x,y| x+y}.arity # => 2. Two arguments expected
+
+6.6 Closures
+
+binding # Returns Binding object for the closure
+
+6.7 Method Objects
+
+Object representation of a method. Unlike Procs, method objects are not closures.
