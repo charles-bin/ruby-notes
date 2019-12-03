@@ -118,3 +118,11 @@ binding # Returns Binding object for the closure
 6.7 Method Objects
 
 Object representation of a method. Unlike Procs, method objects are not closures.
+
+== Review ==
+
+Blocks are bits of code that can be yielded to, to execute
+Methods are bits of code that are associated with an object, accessible through the self keyword
+
+Proc objects behave like blocks (returning from a Proc will return from the enclosing method call)
+Lambda objects behave like methods (returning from a Lambda will return just from the Lambda itself)
