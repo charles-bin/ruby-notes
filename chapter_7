@@ -1,0 +1,274 @@
+Chapter 7 - Classes and Modules
+
+class Point
+  # self refers to the Point class itself for any vars defined out here
+
+  # defines an instance method for this class
+  # creates instances variables which always start with @
+  def initialize(x, y)
+    @x, @y = x, y
+  end
+
+  # getter methods for x and y
+  def x; @x; end
+  def y; @y; end
+
+  # setter methods for x and y
+  # implicit ruby magic
+  def x=(value)
+    @x = value
+  end
+
+  def y=(value)
+    @y = value
+  end
+end
+
+p = Point.new
+p = Point.new(0, 0)
+
+# Built-in methods on Object
+p.class
+p.is_a? Point
+
+# Quick way to add instance variables with getter and setter methods
+class Point
+  attr_accessor :x, :y
+end
+
+# Just getter methods for immutable version of the class
+class Point
+  attr_reader :x, :y
+end
+
+# The each iterator is special, it's used by the Enumerable module to enable more iterators
+class Point
+  def each
+    yield @x
+    yield @y
+  end
+end
+
+# Then you can pass a block that receives the yielded values in turn
+p = Point.new(1, 2)
+p.each {|x| print x}
+
+# Define equality
+def ==(other)
+  ...
+end
+
+def eql?(o)
+  ...
+end
+
+# Define ordering
+def <=>(o)
+  ...
+end
+
+7.1.12 Quick and Easy Mutable Classes
+
+Struct.new("Point", :x, :y) # Struct::Point
+Point = Struct.new(:x, :y) # Point class assigned to variable
+
+7.1.13 Class Method
+
+Defined on the class not an instance (like a static method)
+
+class Point
+  def Point.sum(*points)
+    ...
+  end
+
+  # Can also use self instead of class name
+  def self.min(*points)
+    ...
+  end
+end
+
+7.1.14 Constants
+
+class Point
+  def initialize(x, y)
+    ...
+  end
+
+  ORIGIN = Point.new(0, 0)
+end
+
+# to use outside of class
+Point::ORIGIN
+
+7.1.15 Class Variables
+
+class Point
+  @@n = 0
+
+  def initialize(x, y)
+    @@n += 1
+  end
+end
+
+7.1.16 Class Instance Variables
+
+These are instance variables defined outside of an instance method.
+They can't be used in an instance method, only class methods.
+
+7.2 Method Visibility
+
+Public by default (except for initialize which is private by default)
+
+Private method p can only be invoked by it's owning object o
+
+Protected methods defined on class C can be invoked by any object subclassing (or of class) C.
+
+class Point
+  # public methods here
+
+  protected
+  # protected here
+
+  private
+  # private here
+end
+
+# Or you can explicitly change visibility by method name
+class Widget
+  def x
+    @x
+  end
+  protected :x
+end
+
+The above are for methods. Instance and class variables are private and constants are public.
+
+# to make class methods public or private
+private_class_method :new
+public_class_method :new
+
+# invoke a private method, because why not
+w = Widget.new
+w.send :private_method
+
+7.3 Subclassing and Inheritance
+
+class Subclass < Superclass
+end
+
+Abstract class uses undefined methods that its subclasses need to define
+Concrete class extends an abstract class and defines all the abstract methods of its ancestors
+
+7.3.3 Chaining
+
+chaining is just calling the overriden method of the superclass by using the super keyword
+
+7.3.4 Inheriting class methods
+
+Try to call inherited class methods through the class object on which they are defined
+
+7.3.5 Inheritance and instance variables
+
+Instance variables are not inherited, they are simply created the first time they are assigned to in a method.
+
+Thus, if you override the name of a superclass's instance variable such as @count (that was created by let's say calling super in initialize of the child class), then the value will be replaced.
+
+7.3.6 Inheritance and class variables
+
+Class variables are shared by a class and its subclasses. If a subclass alters a superclass's class variable, the superclass object will see the change.
+
+7.3.7 Inheritance and constants
+
+Constants are inherited
+
+7.4 Object Creation and Initialization
+
+new creates objects and is essentially just a call to allocate and initialize
+allocate creates an uninitialized object and initialize initializes it
+
+factory methods can be imitated by making new private with private_class_method :new, then exposing public class methods
+
+7.4.3 dup, clone, and initialize_copy
+
+dup creates a new instance of the class and copies all instance variables and taintedness
+clone copies single methods as well frozeness
+
+initialize_copy is called after dup and clone to, well to initialize the copy
+
+7.4.4 marshal_dump and marshal_load
+
+serialize and deserialize objects
+
+7.4.5 singleton pattern
+
+singleton is a class with one instance
+
+pretty much to store a bunch of global state, you can get some help from the Singleton module
+
+7.5 Modules
+
+a module is a named group of methods, constants, and class variables
+can be used as a namespace or a mixin
+every class is a module, but you cannot include classes
+
+module Base64
+  def self.encode
+  end
+
+  def self.decode
+  end
+
+  # or with module name prefix
+  def Base64.encode
+  end
+
+  class Encoder
+    def encode
+    end
+  end
+
+  # no special access between methods or classes inside a module, so Encoder would call Base64.helper
+  def Base64.helper
+  end
+end
+
+text = Base64.encode(data)
+
+7.5.2 Modules as mixins
+
+including a module inside a class adds all the methods of the module to the class
+
+class Point
+  include Enumerable, Comparable
+end
+
+7.5.3 Includable Namespace Modules
+
+module_function with args converts those methods to module functions, which basically makes the methods private while creating a class method copy
+without args it affects all subsequently defined methods
+
+this enforces that you must call the methods through the class object. the included module functions cannot be called on the object that includes the module.
+basically this is for when you want to use the methods from the module in a class, but you don't want to give all that functionality to the class itself
+
+7.6 Loading and Requiring Modules
+
+load and require
+require loads binaries, doesn't require a complete filename, prevents multiple loads
+load and require execute the file immediately, but in a separate scope
+
+7.7 Singleton Methods and the Eigenclass
+
+class << object
+  def single_method
+  end
+end
+
+a class method is just a singleton method on the class instance object
+
+7.8 Method Lookup
+
+basically goes from most specific definition to most general
+
+7.9 Constant Lookup
+
+looks for name in lexically enclosing scopes, then inheritance hierarchy, then top-level (global) scope, then calls the const_missing method
