@@ -1,0 +1,84 @@
+Chapter 8 - Reflection and Metaprogramming
+
+reflection/introspection: when a program examines its state, structure/functionality
+
+metaprogramming: writing programs that help write programs. typically by extending the language akin to a dsl
+
+8.1 Types, Classes, and Modules
+
+built in reflection methods to determine object type like o.class and o.instance_of? c
+
+built in methods/operators for ancestry:
+C < B checks if C includes B
+
+Kernel.binding built-in represents the state of Ruby's variable bindings at the location of the call
+
+8.3 Variables and Constants
+
+there are built-in reflective methods to list defined variables:
+global_variables
+local_variables
+Point.class_variables
+Point.constants
+
+8.4 Methods
+
+similarly:
+o.methods
+o.public_methods
+...
+o.singleton_methods
+
+you can get method objects with o.method(:foo)
+
+you can define methods with define_method(name, block). one use is to dynamically create methods with different names but the same functionality (like many attributes).
+
+8.5 Hooks
+
+Module, Class, and Object have lifecycle-esque callback methods called hooks
+
+ex. this is invoked if a subclass inherits the current class
+
+def Object.inherited(c)
+  puts "class #{c} < #{self}"
+end
+
+also when module included, method added, singleton method added
+
+8.6 Tracing
+
+STDERR.puts "#{__FILE__}:#{__LINE__}: invalid data"
+
+utility methods to see stack trace, variable definitions, and run block on each line of code
+
+8.7 ObjectSpace and GC
+
+ObjectSpace.each_object(Class) {|c| puts c}
+ObjectSpace.garbage_collect
+
+8.8 Custom Control Structures
+
+afterevery module has utilities for delayed and repeated execution of a block (using threads)
+
+8.9 Missing Methods and Missing Constants
+
+lazily compute missing constants and methods on the fly
+
+8.10 Dynamically Creating Methods
+
+describes how attr_reader/attr_accessor are implemented
+class_eval evaluates generated code
+
+defining methods with define_method, but using the attributes method instead
+
+8.11 Alias Chaining
+
+# step 1
+alias alias_method_name existing_method
+# step 2: define new version
+def existing_method(param):
+  ...
+end
+
+
+
